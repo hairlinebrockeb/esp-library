@@ -105,7 +105,7 @@ function ESP:AddObjectListener(parent, options)
 						ColorDynamic = options.ColorDynamic,
 						Name = type(options.CustomName) == "function" and options.CustomName(c) or options.CustomName or options.SelfName and c.Name,
 						IsEnabled = options.IsEnabled,
-						RenderInNil = options.RenderInNil
+						RenderInNil = options.RenderInNil,
 						flag = options.flag
 					})
 					--TODO: add a better way of passing options
@@ -276,7 +276,7 @@ function ESP:Add(obj, options)
 		Temporary = options.Temporary,
 		ColorDynamic = options.ColorDynamic,
 		RenderInNil = options.RenderInNil,
-		offset = options.offset
+		offset = options.offset,
 		tag = options.tag
 	}, boxBase)
 
