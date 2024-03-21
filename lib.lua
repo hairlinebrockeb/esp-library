@@ -196,7 +196,7 @@ function boxBase:Update()
 		TagPos = cf * ESP.BoxShift * CFrame.new(0,size.Y/2,0),
 		Torso = cf * ESP.BoxShift
 	}
-
+	local offset = self.offset or Vector2.new(0,0)
 	if ESP.Boxes then
 		local TopLeft, Vis1 = WorldToViewportPoint(cam, locs.TopLeft.p)
 		local TopRight, Vis2 = WorldToViewportPoint(cam, locs.TopRight.p)
@@ -224,7 +224,7 @@ function boxBase:Update()
 		
 		if Vis5 then
 			self.Components.Name.Visible = true
-			self.Components.Name.Position = Vector2.new(TagPos.X, TagPos.Y)
+			self.Components.Name.Position = Vector2.new(TagPos.X, TagPos.Y) + offset
 			self.Components.Name.Text = self.Name
 			self.Components.Name.Color = color
 			
@@ -274,7 +274,8 @@ function ESP:Add(obj, options)
 		IsEnabled = options.IsEnabled,
 		Temporary = options.Temporary,
 		ColorDynamic = options.ColorDynamic,
-		RenderInNil = options.RenderInNil
+		RenderInNil = options.RenderInNil,
+		offset = options.offset
 	}, boxBase)
 
 	if self:GetBox(obj) then
