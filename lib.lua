@@ -107,7 +107,8 @@ function ESP:AddObjectListener(parent, options)
 						IsEnabled = options.IsEnabled,
 						RenderInNil = options.RenderInNil,
 						flag = options.flag;
-						tag = options.flag
+						tag = options.flag;
+                        entity = options.entity;
 					})
 					--TODO: add a better way of passing options
 					if options.OnAdded then
@@ -227,7 +228,15 @@ function boxBase:Update()
 		if Vis5 then
 			self.Components.Name.Visible = true
 			self.Components.Name.Position = Vector2.new(TagPos.X, TagPos.Y) + offset
-			self.Components.Name.Text = self.Name
+            local supposedName = self.Name
+            if self.entity and self.entity == true then 
+                if self.Object:FindFirstChild('Humanoid') then 
+                    local maxhealth = math.floor(self.Object:FindFirstChild('Humanoid').MaxHealth)
+                    local health = math.floor(self.Object:FindFirstChild('Humanoid').Health)
+                    supposedName = `    [{maxhealth}/{health}]\n{self.Name}`
+                end
+            end
+			self.Components.Name.Text = supposedName --self.Name
 			self.Components.Name.Color = color
 			
 			self.Components.Distance.Visible = true
@@ -278,7 +287,9 @@ function ESP:Add(obj, options)
 		ColorDynamic = options.ColorDynamic,
 		RenderInNil = options.RenderInNil,
 		offset = options.offset,
-		tag = options.tag
+		tag = options.tag;
+        flag = options.flag;
+        entity = options.entity;
 	}, boxBase)
 
 	if self:GetBox(obj) then
