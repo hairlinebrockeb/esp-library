@@ -1,5 +1,5 @@
 --Settings--
-local ESP = {
+getgenv().ESP = getgenv().ESP or {
 	Enabled = false,
 	Boxes = true,
 	BoxShift = CFrame.new(0,-1.5,0),
@@ -99,7 +99,8 @@ function ESP:AddObjectListener(parent, options)
 		if type(options.Type) == "string" and c:IsA(options.Type) or options.Type == nil then
 			if type(options.Name) == "string" and c.Name == options.Name or options.Name == nil then
 				if not options.Validator or options.Validator(c) then
-					local box = ESP:Add(c, {
+					
+                    local box = ESP:Add(c, {
 						PrimaryPart = type(options.PrimaryPart) == "string" and c:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(c),
 						Color = type(options.Color) == "function" and options.Color(c) or options.Color,
 						ColorDynamic = options.ColorDynamic,
