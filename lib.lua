@@ -234,7 +234,8 @@ function boxBase:Update()
                 if self.Object:FindFirstChild('Humanoid') then 
                     local maxhealth = math.floor(self.Object:FindFirstChild('Humanoid').MaxHealth)
                     local health = math.floor(self.Object:FindFirstChild('Humanoid').Health)
-                    supposedName = `    [{maxhealth}/{health}]\n{self.Name}`
+                    local halfofname = math.floor(string.len(self.Name)/2)
+                    supposedName = `{string.rep(' ',halfofname)}[{maxhealth}/{health}]\n{self.Name}`
                 end
             end
 			self.Components.Name.Text = supposedName --self.Name
@@ -244,7 +245,7 @@ function boxBase:Update()
 			self.Components.Distance.Position = Vector2.new(TagPos.X, TagPos.Y + 14)
             local disttext = math.floor((cam.CFrame.p - cf.p).magnitude) .."m away"
             if supposedName ~= self.Name then 
-                disttext = '\n{disttext}'
+                disttext = '\n\n{disttext}'
             end
 			self.Components.Distance.Text = disttext
 			self.Components.Distance.Color = color
