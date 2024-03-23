@@ -242,7 +242,7 @@ function boxBase:Update()
 			self.Components.Name.Color = color
 			
 			self.Components.Distance.Visible = true
-			self.Components.Distance.Position = + Vector2.new(TagPos.X, TagPos.Y + 14) + offset --Vector2.new(TagPos.X, TagPos.Y + 14)
+			self.Components.Distance.Position = Vector2.new(TagPos.X, TagPos.Y + 14) + offset --Vector2.new(TagPos.X, TagPos.Y + 14)
             local disttext = math.floor((cam.CFrame.p - cf.p).magnitude) .."m away"
             local subsitute = disttext
             if supposedName ~= self.Name then 
