@@ -134,6 +134,63 @@ function ESP:AddObjectListener(parent, options)
 	end
 end
 
+function ESP:CreateOnPath(path, options)
+	local EspsAssignedToPath = {};
+	local EspComponents = {};
+	local MaximumEsps = options.max;
+	if not MaximumEsps then return warn('cant do esp without a max') end
+
+	local function EspFunction(child)
+		table.insert(EspsAssignedToPath,child)
+		ESP:Add(v,{
+			PrimaryPart = type(options.PrimaryPart) == "string" and c:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(c) or child:IsA('Part') or child:IsA('MeshPart') or child:IsA('UnionPart'),
+			Color = type(options.Color) == "function" and options.Color(c) or options.Color,
+			ColorDynamic = options.ColorDynamic,
+			Name = type(options.CustomName) == "function" and options.CustomName(c) or options.CustomName or options.SelfName and c.Name,
+			IsEnabled = options.IsEnabled,
+			RenderInNil = options.RenderInNil,
+			flag = options.flag;
+			tag = options.flag;
+			entity = options.entity;
+			distance = options.distance -- type(options.Distance) == "function" and options.Distance or
+		})
+	end
+	for i,v in next, path:GetChildren() do 
+		if i == MaximumEsps + 1 then break end -- Maximum Allowed
+		EspFunction(v)
+	end
+	path.ChildAdded:Connect(function(child)
+		if #EspsAssignedToPath < MaximumEsps then 
+			EspFunction(child)
+		end
+	end)
+	path.ChildRemoved:Connect(function(child)
+		for i,v in next, EspsAssignedToPath do 
+			if v == child then 
+				table.remove(EspsAssignedToPath,i)
+				--break
+			end;
+		end;
+		if #EspsAssignedToPath < MaximumEsps then 
+			for i,v in next, path:GetChildren() do 
+				local canBreak = false;
+				for _, espChild in next, EspsAssignedToPath do 
+					if espChild ~= v then 
+						canBreak = true;
+						break
+					end
+				end;
+				if canBreak == true then 
+					EspFunction(v)
+					break
+				end
+			end;
+		end;
+	end) -- if espsassigned is 1 more than expected remove one random
+	return EspsAssignedToPath
+end
+
+
 local boxBase = {}
 boxBase.__index = boxBase
 
