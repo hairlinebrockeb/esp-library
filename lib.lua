@@ -110,7 +110,7 @@ function ESP:AddObjectListener(parent, options)
 						flag = options.flag;
 						tag = options.flag;
                         entity = options.entity;
-						distance = type(options.Distance) == "function" and options.Distance(c) or options.Distance
+						distance = options.distance -- type(options.Distance) == "function" and options.Distance or
 					})
 					--TODO: add a better way of passing options
 					if options.OnAdded then
