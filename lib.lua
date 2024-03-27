@@ -143,7 +143,7 @@ function ESP:CreateOnPath(path, options)
 	local function EspFunction(child)
 		table.insert(EspsAssignedToPath,child)
 		print(child.Name)
-		ESP:Add(v,{
+		ESP:Add(child,{
 			PrimaryPart = type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child) or child:IsA('Part') or child:IsA('MeshPart') or child:IsA('UnionPart'),
 			Color = type(options.Color) == "function" and options.Color(child) or options.Color,
 			ColorDynamic = options.ColorDynamic,
