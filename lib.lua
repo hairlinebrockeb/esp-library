@@ -179,7 +179,7 @@ function boxBase:Update()
 	if self.distance then  -- and self.distance < dist 
 		--allow = false -- if self.
 		local distget = self.distance()
-		if dist > distg then 
+		if dist < distg then 
 			allow = false;
 		end
 	end
