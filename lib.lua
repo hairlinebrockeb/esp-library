@@ -143,8 +143,13 @@ function ESP:CreateOnPath(path, options)
 	local function EspFunction(child)
 		table.insert(EspsAssignedToPath,child)
 		print(child.Name)
+		pcall(function()
+            if child.Position then 
+                ispart = true
+            end
+        end) -- or child:IsA('Part') or child:IsA('MeshPart') or child:IsA('UnionPart')
 		ESP:Add(child,{
-			PrimaryPart = type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child) or child:IsA('Part') or child:IsA('MeshPart') or child:IsA('UnionPart'),
+			PrimaryPart = type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child) or ispart and child ,
 			Color = type(options.Color) == "function" and options.Color(child) or options.Color,
 			ColorDynamic = options.ColorDynamic,
 			Name = type(options.CustomName) == "function" and options.CustomName(child) or options.CustomName or options.SelfName and child.Name,
@@ -238,7 +243,7 @@ function boxBase:Update()
 		--allow = false -- if self.
 		local distget = self.distance()
 		--warn(distget)
-		if distget >= dist then --if dist < distget then 
+		if dist >= distget then -- distget  dist then --if dist < distget then 
 			allow = false;
 		end
 	end
@@ -347,6 +352,12 @@ function ESP:Add(obj, options)
 	if not obj.Parent and not options.RenderInNil then
 		return warn(obj, "has no parent")
 	end
+    local ispart = false
+    pcall(function()
+        if ispart.Position then 
+            ispart = true
+        end
+    end)
 
 	local box = setmetatable({
 		Name = options.Name or obj.Name,
@@ -355,7 +366,7 @@ function ESP:Add(obj, options)
 		Size = options.Size or self.BoxSize,
 		Object = obj,
 		Player = options.Player or plrs:GetPlayerFromCharacter(obj),
-		PrimaryPart = options.PrimaryPart or obj.ClassName == "Model" and (obj.PrimaryPart or obj:FindFirstChild("HumanoidRootPart") or obj:FindFirstChildWhichIsA("BasePart")) or obj:IsA("BasePart") and obj,
+		PrimaryPart = options.PrimaryPart or obj.ClassName == "Model" and (obj.PrimaryPart or obj:FindFirstChild("HumanoidRootPart") or obj:FindFirstChildWhichIsA("BasePart")) or obj:IsA("BasePart") and obj or ispart and obj,
 		Components = {},
 		IsEnabled = options.IsEnabled,
 		Temporary = options.Temporary,
