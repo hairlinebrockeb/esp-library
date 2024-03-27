@@ -110,6 +110,7 @@ function ESP:AddObjectListener(parent, options)
 						flag = options.flag;
 						tag = options.flag;
                         entity = options.entity;
+						distance = type(options.Distance) == "function" and options.Distance(c) or options.Distance
 					})
 					--TODO: add a better way of passing options
 					if options.OnAdded then
@@ -173,6 +174,14 @@ function boxBase:Update()
 	end
 	if not workspace:IsAncestorOf(self.PrimaryPart) and not self.RenderInNil then
 		allow = false
+	end
+	local dist = (self.PrimaryPart.CFrame.Position - cam.CFrame.p).Magnitude     -- math.floor((cam.CFrame.p - cf.p).magnitude)
+	if self.distance then  -- and self.distance < dist 
+		--allow = false -- if self.
+		local distget = self.distance()
+		if dist > distg then 
+			allow = false;
+		end
 	end
 
 	if not allow then
@@ -297,6 +306,7 @@ function ESP:Add(obj, options)
 		tag = options.tag;
         flag = options.flag;
         entity = options.entity;
+		distance = options.distance
 	}, boxBase)
 
 	if self:GetBox(obj) then
