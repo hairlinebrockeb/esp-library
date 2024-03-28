@@ -360,6 +360,7 @@ function boxBase:Update()
 		local amxDist = self.maxdistance()
 		if dist >= amxDist then 
 			allow = false;
+			print('dist bigger than max ')
 		end
 	end
 
