@@ -14,7 +14,9 @@ getgenv().ESP = getgenv().ESP or {
 	Players = true,
 	
 	Objects = setmetatable({}, {__mode="kv"}),
-	Overrides = {}
+	Overrides = {};
+
+	PathEsps = {};
 }
 
 --Declarations--
@@ -104,7 +106,7 @@ function ESP:AddObjectListener(parent, options)
 						PrimaryPart = type(options.PrimaryPart) == "string" and c:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(c),
 						Color = type(options.Color) == "function" and options.Color(c) or options.Color,
 						ColorDynamic = options.ColorDynamic,
-						Name = type(options.CustomName) == "function" and options.CustomName(c) or options.CustomName or options.SelfName and c.Name,
+						Name = type(options.CustomName) == "function" and options.CustomName or options.CustomName or options.SelfName and c.Name,
 						IsEnabled = options.IsEnabled,
 						RenderInNil = options.RenderInNil,
 						flag = options.flag;
@@ -135,14 +137,21 @@ function ESP:AddObjectListener(parent, options)
 end
 
 function ESP:CreateOnPath(path, options)
-	local EspsAssignedToPath = {};
+	ESP.PathEsps[path:GetFullName()] = {};
+	EspsAssignedToPath = ESP.PathEsps[path:GetFullName()]
+	EspsAssignedToPath.removeobj = function()
+
+	end;
+	EspsAssignedToPath.ObjectRemoved = function()
+
+	end	
 	local EspComponents = {};
 	local MaximumEsps = options.max;
 	if not MaximumEsps then return warn('cant do esp without a max') end
 
-	local function EspFunction(child)
+	EspsAssignedToPath.EspFunction = function(child)
 		table.insert(EspsAssignedToPath,child)
-		print(child.Name)
+		--print(child.Name)
 		pcall(function()
             if child.Position then 
                 ispart = true
@@ -152,22 +161,82 @@ function ESP:CreateOnPath(path, options)
 			PrimaryPart = type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child) or ispart and child ,
 			Color = type(options.Color) == "function" and options.Color(child) or options.Color,
 			ColorDynamic = options.ColorDynamic,
-			Name = type(options.CustomName) == "function" and options.CustomName(child) or options.CustomName or options.SelfName and child.Name,
+			Name = type(options.CustomName) == "function" and options.CustomName or options.CustomName or options.SelfName and child.Name,
 			IsEnabled = options.IsEnabled,
 			RenderInNil = options.RenderInNil,
 			flag = options.flag;
 			tag = options.flag;
 			entity = options.entity;
-			distance = options.distance -- type(options.Distance) == "function" and options.Distance or
+			renderclosest = options.renderclosest;
+			pathorigin = EspsAssignedToPath;
+			distance = options.distance;-- type(options.Distance) == "function" and options.Distance or
+			_end = function(Object)
+				for __, espobjects in next, EspsAssignedToPath do 
+					if espobjects == Object then 
+						print('removed table value',Object.Name)
+						table.remove(EspsAssignedToPath,i)
+						--break
+					end;
+				end;
+			end;
 		})
 	end
-	for i,v in next, path:GetChildren() do 
-		if i == MaximumEsps + 1 then break end -- Maximum Allowed
-		EspFunction(v)
-	end
+	local EspFunction = EspsAssignedToPath.EspFunction
+	EspsAssignedToPath.LookForObjects = function(firstOnly, old)
+		for i,v in next, path:GetChildren() do 
+			--if i == MaximumEsps + 1 and firstOnly == false then break end -- Maximum Allowed
+			if #EspsAssignedToPath >= MaximumEsps then print('max allowed') break end
+			local shouldstopnow = false;
+			local obj = nil;
+			local canUse = true ;
+			for __, espobjects in next, EspsAssignedToPath do 
+				if espobjects == v then 
+				--	print('already used ',v.Name)
+					canUse = false;
+				end;
+			end;
+			pcall(function()
+				if v.Position then 
+					obj = v
+				end
+			end) 
+			if obj == nil then 
+				--print('is nil')
+				obj = type(options.PrimaryPart) == "string" and v:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(v)
+			end
+			local DistanceFromObject
+			if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.PrimaryPart then 
+				DistanceFromObject = (obj.CFrame.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).Magnitude
+			else
+				DistanceFromObject = (obj.CFrame.Position - cam.CFrame.p).Magnitude
+			end	
+			 --= (obj.CFrame.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).Magnitude --cam.CFrame.p).Magnitude 
+			if DistanceFromObject <= options.distance() and v ~= old and canUse == true then 
+				if firstOnly then 
+					---print('ASSIGNING',obj.Name,DistanceFromObject)
+				end	
+				EspsAssignedToPath.EspFunction(obj)
+				shouldstopnow = true;
+			end	
+			if firstOnly and shouldstopnow then task.wait() print('replaced removed') break end
+		end
+	end	
+	EspsAssignedToPath.LookForObjects(false)
 	path.ChildAdded:Connect(function(child)
 		if #EspsAssignedToPath < MaximumEsps then 
-			EspFunction(child)
+			local obj = nil
+			pcall(function()
+				if v.Position then 
+					obj = v
+				end
+			end) 
+			if obj == nil then 
+				obj = type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child)
+			end
+			local DistanceFromObject = (obj.CFrame.Position - cam.CFrame.p).Magnitude 
+			if DistanceFromObject <= options.distance() then 
+				EspFunction(child)
+			end	
 		end
 	end)
 	path.ChildRemoved:Connect(function(child)
@@ -182,7 +251,19 @@ function ESP:CreateOnPath(path, options)
 				local canBreak = false;
 				for _, espChild in next, EspsAssignedToPath do 
 					if espChild ~= v then 
-						canBreak = true;
+						local obj = nil
+						pcall(function()
+							if v.Position then 
+								obj = v
+							end
+						end) 
+						if obj == nil then 
+							obj = type(options.PrimaryPart) == "string" and v:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(v)
+						end
+						local DistanceFromObject = (obj.CFrame.Position - cam.CFrame.p).Magnitude 
+						if DistanceFromObject <= options.distance() then 
+							canBreak = true;
+						end	
 						break
 					end
 				end;
@@ -193,6 +274,7 @@ function ESP:CreateOnPath(path, options)
 			end;
 		end;
 	end) -- if espsassigned is 1 more than expected remove one random
+
 	return EspsAssignedToPath
 end
 
@@ -202,11 +284,24 @@ boxBase.__index = boxBase
 
 function boxBase:Remove()
 	ESP.Objects[self.Object] = nil
+	if self.pathorigin and self.pathorigin.LookForObjects ~= nil then 
+		--print('can get newe object')
+
+		self.pathorigin.LookForObjects(true,self.PrimaryPart)
+	end	
 	for i,v in pairs(self.Components) do
 		v.Visible = false
 		v:Remove()
 		self.Components[i] = nil
 	end
+	if self._end then 
+		self._end(self.PrimaryPart)
+		for i,v in next, self.pathorigin do 
+			if v == self.PrimaryPart then 
+				table.remove(self.pathorigin,i)
+			end	
+		end	
+	end	
 end
 
 function boxBase:Update()
@@ -238,13 +333,20 @@ function boxBase:Update()
 	if not workspace:IsAncestorOf(self.PrimaryPart) and not self.RenderInNil then
 		allow = false
 	end
-	local dist = (self.PrimaryPart.CFrame.Position - cam.CFrame.p).Magnitude     -- math.floor((cam.CFrame.p - cf.p).magnitude)
+	local dist = (self.PrimaryPart.CFrame.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).Magnitude--(self.PrimaryPart.CFrame.Position - cam.CFrame.p).Magnitude     -- math.floor((cam.CFrame.p - cf.p).magnitude)
 	if self.distance then  -- and self.distance < dist 
 		--allow = false -- if self.
 		local distget = self.distance()
 		--warn(distget)
 		if dist >= distget then -- distget  dist then --if dist < distget then 
 			allow = false;
+			if self.renderclosest and (dist-distget) > 20 then 
+				print(dist,distget)
+				--self.renderclosest
+				--if self.newlyreplcat
+				print(self.PrimaryPart.Name..' remvoed cuz distance')
+				self:Remove()
+			end
 		end
 	end
 
@@ -303,6 +405,7 @@ function boxBase:Update()
 			self.Components.Name.Visible = true
 			self.Components.Name.Position = Vector2.new(TagPos.X, TagPos.Y) + offset
             local supposedName = self.Name
+			if type(supposedName) == 'function' then supposedName = supposedName() end
             if self.entity and self.entity == true then 
                 if self.Object:FindFirstChild('Humanoid') then 
                     local maxhealth = math.floor(self.Object:FindFirstChild('Humanoid').MaxHealth)
@@ -360,7 +463,7 @@ function ESP:Add(obj, options)
     end)
 
 	local box = setmetatable({
-		Name = options.Name or obj.Name,
+		Name = type(options.Name) == 'string' and options.Name or type(options.Name) == 'function' and options.Name or obj.Name,
 		Type = "Box",
 		Color = options.Color --[[or self:GetColor(obj)]],
 		Size = options.Size or self.BoxSize,
@@ -376,7 +479,10 @@ function ESP:Add(obj, options)
 		tag = options.tag;
         flag = options.flag;
         entity = options.entity;
-		distance = options.distance
+		distance = options.distance;
+		renderclosest = options.renderclosest;
+		pathorigin = options.pathorigin;
+		_end = options._end;
 	}, boxBase)
 
 	if self:GetBox(obj) then
@@ -472,14 +578,23 @@ for i,v in pairs(plrs:GetPlayers()) do
 	end
 end
 
+
+
 game:GetService("RunService").RenderStepped:Connect(function()
 	cam = workspace.CurrentCamera
-	for i,v in (ESP.Enabled and pairs or ipairs)(ESP.Objects) do
-		if v.Update then
-			local s,e = pcall(v.Update, v)
-			if not s then warn("[EU]", e, v.Object:GetFullName()) end
-		end
-	end
+	if ESP.Enabled == true then 
+		for i,v in next, ESP.Objects do 
+			if v.Update then
+				v.Update(v)
+			end	
+		end	
+	end	
+	-- for i,v in (ESP.Enabled and pairs or ipairs)(ESP.Objects) do
+	-- 	if v.Update then
+    --         v.Update(v)
+	-- 		--local s,e = pcall(v.Update, v)
+	-- 		--if not s then warn("[EU]", e, v.Object:GetFullName()) end
+	-- 	end
+	-- end
 end)
-
 return ESP
