@@ -174,7 +174,7 @@ function ESP:CreateOnPath(path, options)
 			_end = function(Object)
 				for __, espobjects in next, EspsAssignedToPath do 
 					if espobjects == Object then 
-						print('removed table value',Object.Name)
+					--	print('removed table value',Object.Name)
 						table.remove(EspsAssignedToPath,i)
 						--break
 					end;
@@ -348,10 +348,10 @@ function boxBase:Update()
 		if dist >= distget then -- distget  dist then --if dist < distget then 
 			allow = false;
 			if self.renderclosest and (dist-distget) > 20 then 
-				print(dist,distget)
+			--	print(dist,distget)
 				--self.renderclosest
 				--if self.newlyreplcat
-				print(self.PrimaryPart.Name..' remvoed cuz distance')
+			--	print(self.PrimaryPart.Name..' remvoed cuz distance')
 				self:Remove()
 			end
 		end
@@ -360,7 +360,7 @@ function boxBase:Update()
 		local amxDist = self.maxdistance()
 		if dist >= amxDist then 
 			allow = false;
-			print('dist bigger than max ')
+		--	print('dist bigger than max ')
 		end
 	end
 
