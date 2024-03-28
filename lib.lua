@@ -232,7 +232,7 @@ function ESP:CreateOnPath(path, options)
 				end
 			end) 
 			if obj == nil then 
-				obj = child.PrimaryPart or type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child)
+				obj = child.PrimaryPart ~= nil and child.PrimaryPart  or type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child)
 			end
 			local DistanceFromObject = (obj.CFrame.Position - cam.CFrame.p).Magnitude 
 			if DistanceFromObject <= options.distance() then 
@@ -390,7 +390,7 @@ function boxBase:Update()
 		Torso = cf * ESP.BoxShift
 	}
 	local offset = self.offset or Vector2.new(0,0)
-	if ESP.Boxes then
+	if ESP.Boxes and self.Components.Quad   then
 		local TopLeft, Vis1 = WorldToViewportPoint(cam, locs.TopLeft.p)
 		local TopRight, Vis2 = WorldToViewportPoint(cam, locs.TopRight.p)
 		local BottomLeft, Vis3 = WorldToViewportPoint(cam, locs.BottomLeft.p)
@@ -409,7 +409,9 @@ function boxBase:Update()
 			end
 		end
 	else
-		self.Components.Quad.Visible = false
+		if self.Components.Quad  then 
+			self.Components.Quad.Visible = false
+		end
 	end
 
 	if ESP.Names then
@@ -449,7 +451,7 @@ function boxBase:Update()
 		self.Components.Distance.Visible = false
 	end
 	
-	if ESP.Tracers then
+	if ESP.Tracers and self.Components.Tracer then
 		local TorsoPos, Vis6 = WorldToViewportPoint(cam, locs.Torso.p)
 
 		if Vis6 then
@@ -461,7 +463,9 @@ function boxBase:Update()
 			self.Components.Tracer.Visible = false
 		end
 	else
-		self.Components.Tracer.Visible = false
+		if self.Components.Tracer then 
+			self.Components.Tracer.Visible = false
+		end
 	end
 end
 
@@ -479,7 +483,7 @@ function ESP:Add(obj, options)
 	local box = setmetatable({
 		Name = type(options.Name) == 'string' and options.Name or type(options.Name) == 'function' and options.Name or obj.Name,
 		Type = "Box",
-		Color = options.Color --[[or self:GetColor(obj)]],
+		Color = type(options.Color) == 'function' and options.Color() or options.Color --[[or self:GetColor(obj)]],
 		Size = options.Size or self.BoxSize,
 		Object = obj,
 		Player = options.Player or plrs:GetPlayerFromCharacter(obj),
@@ -504,13 +508,15 @@ function ESP:Add(obj, options)
 		self:GetBox(obj):Remove()
 	end
 
-	box.Components["Quad"] = Draw("Quad", {
-		Thickness = self.Thickness,
-		Color = color,
-		Transparency = 1,
-		Filled = false,
-		Visible = self.Enabled and self.Boxes
-	})
+	if not options.NoBox then 
+		box.Components["Quad"] = Draw("Quad", {
+			Thickness = self.Thickness,
+			Color = color,
+			Transparency = 1,
+			Filled = false,
+			Visible = self.Enabled and self.Boxes
+		})
+	end
 	box.Components["Name"] = Draw("Text", {
 		Text = box.Name,
 		Color = box.Color,
@@ -527,12 +533,14 @@ function ESP:Add(obj, options)
 		Visible = self.Enabled and self.Names
 	})
 	
-	box.Components["Tracer"] = Draw("Line", {
-		Thickness = ESP.Thickness,
-		Color = box.Color,
-		Transparency = 1,
-		Visible = self.Enabled and self.Tracers
-	})
+	if not options.NoTracer then 
+		box.Components["Tracer"] = Draw("Line", {
+			Thickness = ESP.Thickness,
+			Color = box.Color,
+			Transparency = 1,
+			Visible = self.Enabled and self.Tracers
+		})
+	end
 	self.Objects[obj] = box
 	
 	obj.AncestryChanged:Connect(function(_, parent)
