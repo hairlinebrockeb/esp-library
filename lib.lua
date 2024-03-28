@@ -232,7 +232,7 @@ function ESP:CreateOnPath(path, options)
 				end
 			end) 
 			if obj == nil then 
-				obj = v.PrimaryPart or type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child)
+				obj = child.PrimaryPart or type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child)
 			end
 			local DistanceFromObject = (obj.CFrame.Position - cam.CFrame.p).Magnitude 
 			if DistanceFromObject <= options.distance() then 
