@@ -112,7 +112,8 @@ function ESP:AddObjectListener(parent, options)
 						flag = options.flag;
 						tag = options.flag;
                         entity = options.entity;
-						distance = options.distance -- type(options.Distance) == "function" and options.Distance or
+						distance = options.distance; -- type(options.Distance) == "function" and options.Distance or
+						maxdistance = options.maxdistance
 					})
 					--TODO: add a better way of passing options
 					if options.OnAdded then
@@ -333,7 +334,13 @@ function boxBase:Update()
 	if not workspace:IsAncestorOf(self.PrimaryPart) and not self.RenderInNil then
 		allow = false
 	end
-	local dist = (self.PrimaryPart.CFrame.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).Magnitude--(self.PrimaryPart.CFrame.Position - cam.CFrame.p).Magnitude     -- math.floor((cam.CFrame.p - cf.p).magnitude)
+	--local dist = (self.PrimaryPart.CFrame.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).Magnitude--(self.PrimaryPart.CFrame.Position - cam.CFrame.p).Magnitude     -- math.floor((cam.CFrame.p - cf.p).magnitude)
+	local dist
+	if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.PrimaryPart then 
+		dist = (self.PrimaryPart.CFrame.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).Magnitude
+	else
+		dist = (self.PrimaryPart.CFrame.Position - cam.CFrame.p).Magnitude
+	end	
 	if self.distance then  -- and self.distance < dist 
 		--allow = false -- if self.
 		local distget = self.distance()
@@ -347,6 +354,12 @@ function boxBase:Update()
 				print(self.PrimaryPart.Name..' remvoed cuz distance')
 				self:Remove()
 			end
+		end
+	end
+	if self.maxdistance then 
+		local amxDist = self.maxdistance()
+		if dist >= amxDist then 
+			allow = false;
 		end
 	end
 
@@ -483,6 +496,7 @@ function ESP:Add(obj, options)
 		renderclosest = options.renderclosest;
 		pathorigin = options.pathorigin;
 		_end = options._end;
+		maxdistance = options.maxdistance
 	}, boxBase)
 
 	if self:GetBox(obj) then
