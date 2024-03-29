@@ -167,7 +167,7 @@ function ESP:CreateOnPath(path, options)
 			PrimaryPart = type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child) or ispart and child ,
 			Color = type(options.Color) == "function" and options.Color or options.Color,
 			ColorDynamic = options.ColorDynamic,
-			Name = Name = type(options.Name) == 'string' and options.Name or type(options.Name) == 'function' and options.Name or options.SelfName and obj.Name or obj.Name,
+			Name = type(options.Name) == 'string' and options.Name or type(options.Name) == 'function' and options.Name or options.SelfName and obj.Name or obj.Name,
 			IsEnabled = options.IsEnabled,
 			RenderInNil = options.RenderInNil,
 			flag = options.flag;
