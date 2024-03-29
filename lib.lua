@@ -331,7 +331,7 @@ function boxBase:Remove()
 end
 
 function boxBase:Update()
-	if not self.PrimaryPart then
+	if not self.PrimaryPart and self.usepivot == false; then
 		--warn("not supposed to print", self.Object)
 		return self:Remove()
 	end
@@ -371,7 +371,7 @@ function boxBase:Update()
 		print('disabled so remove;')
 		return
 	end
-	if not workspace:IsAncestorOf(self.PrimaryPart) and not self.RenderInNil then
+	if self.PrimaryPart and not workspace:IsAncestorOf(self.PrimaryPart) and not self.RenderInNil and not self.usepivot then
 		allow = false
 	end
 	--local dist = (self.PrimaryPart.CFrame.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).Magnitude--(self.PrimaryPart.CFrame.Position - cam.CFrame.p).Magnitude     -- math.floor((cam.CFrame.p - cf.p).magnitude)
@@ -547,7 +547,7 @@ function ESP:Add(obj, options)
 	if not obj.Parent and not options.RenderInNil and typeof(obj) ~= 'Vector3' then
 		return warn(obj, "has no parent")
 	end
-	print(obj.Name)
+	--print(obj.Name)
     local ispart = false
     pcall(function()
         if ispart.Position and typeof(obj) ~= 'Vector3' then 
