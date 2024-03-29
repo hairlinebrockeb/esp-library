@@ -547,6 +547,7 @@ function ESP:Add(obj, options)
 	if not obj.Parent and not options.RenderInNil and typeof(obj) ~= 'Vector3' then
 		return warn(obj, "has no parent")
 	end
+	print(obj.Name)
     local ispart = false
     pcall(function()
         if ispart.Position and typeof(obj) ~= 'Vector3' then 
