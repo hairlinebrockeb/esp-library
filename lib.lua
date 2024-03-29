@@ -275,6 +275,16 @@ function ESP:CreateOnPath(path, options)
 			end;
 		end;
 	end) -- if espsassigned is 1 more than expected remove one random
+	task.spawn(function()
+		while task.wait() do 
+			if #EspsAssignedToPath == 0 then 
+				repeat 
+					task.wait(5)
+					EspsAssignedToPath.LookForObjects(false)
+				until #EspsAssignedToPath ~= 0 
+			end
+		end
+	end)
 
 	return EspsAssignedToPath
 end
@@ -536,7 +546,7 @@ function ESP:Add(obj, options)
 		})
 	end
 	box.Components["Name"] = Draw("Text", {
-		Text = box.Name,
+		Text = type(box.Name) == 'function' and box.Name() or box.Name,
 		Color = box.Color,
 		Center = true,
 		Outline = true,
