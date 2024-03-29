@@ -533,6 +533,9 @@ function boxBase:Update()
 	else
 		self.Components.Name.Visible = false
 		self.Components.Distance.Visible = false
+		if self.flag == 'npcesp' then 
+			warn(self.Name..' 5')
+		end
 	end
 	
 	if ESP.Tracers and self.Components.Tracer then
