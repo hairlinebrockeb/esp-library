@@ -423,9 +423,16 @@ function boxBase:Update()
 		allow = false;
 		-- could merge the two (if self.Player) functions here (setting color and setting visibility)
 	end
+	if options.flag == 'npcesp' then 
+		warn(obj.Name..' 3')
+	end
+
 	if not allow then
 		for i,v in pairs(self.Components) do
 			v.Visible = false
+		end
+		if options.flag == 'npcesp' then 
+			warn(obj.Name..' 4')
 		end
 		return
 	end
@@ -569,6 +576,9 @@ function ESP:Add(obj, options)
 	if #obj:GetChildren() == 0  then -- and options.offload
 		niliszero = true --options.RenderInNil = true;
 	end
+	if options.flag == 'npcesp' then 
+		warn(obj.Name..' 1')
+	end
 
 	local box = setmetatable({
 		Name = type(options.Name) == 'string' and options.Name or type(options.Name) == 'function' and options.Name or options.SelfName and obj.Name or obj.Name,
@@ -637,6 +647,9 @@ function ESP:Add(obj, options)
 		})
 	end
 	self.Objects[obj] = box
+	if options.flag == 'npcesp' then 
+		warn(obj.Name..' 2')
+	end
 	
 	obj.AncestryChanged:Connect(function(_, parent)
 		if parent == nil and ESP.AutoRemove ~= false then
