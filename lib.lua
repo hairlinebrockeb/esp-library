@@ -17,6 +17,11 @@ getgenv().ESP = getgenv().ESP or {
 	Overrides = {};
 
 	PathEsps = {};
+	Settings = {
+		playerespcolor = Color3.fromRGB(255, 170, 0);
+		playerespdistance = 10000;
+		HandlePlayerClient = false; -- Players = true wont make esps
+	};
 }
 
 --Declarations--
@@ -450,11 +455,14 @@ function boxBase:Update()
 			self.Components.Name.Position = Vector2.new(TagPos.X, TagPos.Y) + offset
             local supposedName = self.Name
 			if type(supposedName) == 'function' then supposedName = supposedName() end
-            if self.entity and self.entity == true then 
-                if self.Object:FindFirstChild('Humanoid') then 
-                    local maxhealth = math.floor(self.Object:FindFirstChild('Humanoid').MaxHealth)
-                    local health = math.floor(self.Object:FindFirstChild('Humanoid').Health)
-                    local halfofname = math.floor(string.len(self.Name)/2)
+            if self.entity and self.entity == true or self.Player ~= nil then  -- and self.Player == nil   or self.Object.Parent
+                if self.Object:FindFirstChild('Humanoid') or self.Player and self.Player.Character and self.Player.Character:FindFirstChild('Humanoid') then 
+					local collectHumanoid = self.Object and self.Object:FindFirstChild('Humanoid') or self.Player and self.Player.Character and self.Player.Character:FindFirstChild('Humanoid')
+                    local maxhealth = math.floor(collectHumanoid.MaxHealth)
+                    local health = math.floor(collectHumanoid.Health) -- self.Object:FindFirstChild('Humanoid')
+					local nameget = self.Object and self.Object.Name or self.Player and self.Player.Name
+                    local halfofname = math.floor(string.len(nameget)/2) -- self.Name             --+1 -- (could make it just +1 if the len is an odd number)
+					-- odd number (15%2 == 1), (16%2 == 0) (1 = odd, 2 = even)
                     supposedName = `{string.rep(' ',halfofname)}[{maxhealth}/{health}]\n{self.Name}`
                 end
             end
@@ -602,12 +610,12 @@ local function CharAdded(char)
 		local ev
 		ev = char.ChildAdded:Connect(function(c)
 			if c.Name == "HumanoidRootPart" then
-				ev:Disconnect()
 				ESP:Add(char, {
 					Name = p.Name,
 					Player = p,
 					PrimaryPart = c
 				})
+				ev:Disconnect()
 			end
 		end)
 	else
