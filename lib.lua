@@ -334,7 +334,7 @@ function boxBase:Remove()
 end
 
 function boxBase:Update()
-	if not self.PrimaryPart and self.usepivot == false; then
+	if not self.PrimaryPart and self.usepivot == false then
 		--warn("not supposed to print", self.Object)
 		return self:Remove()
 	end
