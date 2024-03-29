@@ -328,14 +328,30 @@ function boxBase:Update()
 	if self.Player and not ESP.Players then
 		allow = false
 	end
-	if self.IsEnabled and (type(self.IsEnabled) == "string" and not ESP[self.IsEnabled] or type(self.IsEnabled) == "function" and not self:IsEnabled()) then
+	if self.IsEnabled and not self.active and (type(self.IsEnabled) == "string" and not ESP[self.IsEnabled] or type(self.IsEnabled) == "function" and not self:IsEnabled()) then
 		allow = false
+	end
+	local notactive = false;
+	if self.active and type(self.active) == 'function' then 
+		--allow = self.active()
+		if self.active() == false then allow = false notactive = true end;
+	end
+	if self.removeondisable and notactive == true then 
+		self:Remove()
+		print('disabled so remove;')
+		return
 	end
 	if not workspace:IsAncestorOf(self.PrimaryPart) and not self.RenderInNil then
 		allow = false
 	end
 	--local dist = (self.PrimaryPart.CFrame.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).Magnitude--(self.PrimaryPart.CFrame.Position - cam.CFrame.p).Magnitude     -- math.floor((cam.CFrame.p - cf.p).magnitude)
 	local dist
+	local objtake = self.PrimaryPart
+	-- pcall(function()
+	-- 	if objtake:FindFirstChildWhichIsA('Part') then 
+
+	-- 	end
+	-- end)
 	if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.PrimaryPart then 
 		dist = (self.PrimaryPart.CFrame.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).Magnitude
 	else
@@ -501,7 +517,9 @@ function ESP:Add(obj, options)
 		renderclosest = options.renderclosest;
 		pathorigin = options.pathorigin;
 		_end = options._end;
-		maxdistance = options.maxdistance
+		maxdistance = options.maxdistance;
+		active = options.active;
+		removeondisable = options.removeondisable
 	}, boxBase)
 
 	if self:GetBox(obj) then
