@@ -412,7 +412,7 @@ function boxBase:Update()
 	-- end)
 	if self.PrimaryPart ~= nil and type(self.PrimaryPart) ~= 'boolean' then 
 		if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.PrimaryPart then 
-			dist = (self.PrimaryPart.CFrame.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).Magnitude
+			dist = (self.PrimaryPart.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).Magnitude
 		else
 			dist = (self.PrimaryPart.CFrame.Position - cam.CFrame.p).Magnitude
 		end	
