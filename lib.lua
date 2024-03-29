@@ -167,7 +167,7 @@ function ESP:CreateOnPath(path, options)
 			PrimaryPart = type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child) or ispart and child ,
 			Color = type(options.Color) == "function" and options.Color or options.Color,
 			ColorDynamic = options.ColorDynamic,
-			Name = type(options.Name) == 'string' and options.Name or type(options.Name) == 'function' and options.Name or options.SelfName and child.Name or child.Name,
+			Name = type(options.Name) == 'string' and options.Name or type(options.Name) == 'function' and options.Name or options.SelfHumanoidName and child.Name or options.SelfName and child.Name or child.Name,
 			IsEnabled = options.IsEnabled,
 			RenderInNil = options.RenderInNil,
 			flag = options.flag;
@@ -232,7 +232,7 @@ function ESP:CreateOnPath(path, options)
 					if firstOnly then 
 						---print('ASSIGNING',obj.Name,DistanceFromObject)
 					end	
-					EspsAssignedToPath.EspFunction(obj)
+					EspsAssignedToPath.EspFunction(v)
 					shouldstopnow = true;
 				end	
 			end
@@ -254,7 +254,7 @@ function ESP:CreateOnPath(path, options)
 					obj = child:FindFirstChildOfClass('BasePart')
 				end
 			end
-			if obj == nil then 
+			if obj == nil and v:IsA('Model') then 
 				obj = child:IsA('Model') and child.PrimaryPart ~= nil and child.PrimaryPart  or type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child)
 			end
 			if type(obj) == 'boolean' then 
@@ -287,7 +287,15 @@ function ESP:CreateOnPath(path, options)
 							end
 						end) 
 						if obj == nil then 
-							obj = type(options.PrimaryPart) == "string" and v:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(v)
+							if child:FindFirstChildOfClass('BasePart') then 
+								obj = child:FindFirstChildOfClass('BasePart')
+							end
+						end
+						if obj == nil and v:IsA('Model') then 
+							obj = v:IsA('Model') and v.PrimaryPart ~= nil and v.PrimaryPart  or type(options.PrimaryPart) == "string" and v:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(v)
+						end
+						if type(obj) == 'boolean' then 
+							return --warn(obj.Name, 'boolean no esp');
 						end
 						local DistanceFromObject = (obj.CFrame.Position - cam.CFrame.p).Magnitude 
 						if DistanceFromObject <= options.distance() then 
@@ -326,7 +334,9 @@ function boxBase:Remove()
 	if self.pathorigin and self.pathorigin.LookForObjects ~= nil then 
 		--print('can get newe object')
 
-		self.pathorigin.LookForObjects(true,self.PrimaryPart)
+		task.spawn(function()
+			self.pathorigin.LookForObjects(true,self.PrimaryPart)
+		end)
 	end	
 	for i,v in pairs(self.Components) do
 		v.Visible = false
@@ -334,12 +344,14 @@ function boxBase:Remove()
 		self.Components[i] = nil
 	end
 	if self._end then 
-		self._end(self.PrimaryPart)
-		for i,v in next, self.pathorigin do 
-			if v == self.PrimaryPart then 
-				table.remove(self.pathorigin,i)
+		task.spawn(function()
+			self._end(self.PrimaryPart)
+			for i,v in next, self.pathorigin do 
+				if v == self.PrimaryPart then 
+					table.remove(self.pathorigin,i)
+				end	
 			end	
-		end	
+		end)
 	end	
 end
 
@@ -535,7 +547,7 @@ function boxBase:Update()
             local disttext = math.floor((cam.CFrame.p - cf.p).magnitude) .."m away"
             local subsitute = disttext
             if supposedName ~= self.Name then 
-                disttext = `\n{subsitute}`
+                disttext = `{subsitute}`
             end
 			self.Components.Distance.Text = disttext
 			self.Components.Distance.Color = color
