@@ -593,7 +593,8 @@ function ESP:Add(obj, options)
 		_end = options._end;
 		maxdistance = options.maxdistance;
 		active = options.active;
-		removeondisable = options.removeondisable
+		removeondisable = options.removeondisable;
+		usepivot = options.usepivot
 	}, boxBase)
 
 	if typeof(obj) ~= 'Vector3' and self:GetBox(obj) then
@@ -715,4 +716,3 @@ game:GetService("RunService").RenderStepped:Connect(function()
 	-- end
 end)
 return ESP
- 
