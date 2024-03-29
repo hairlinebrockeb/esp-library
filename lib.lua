@@ -529,6 +529,9 @@ function boxBase:Update()
 		else
 			self.Components.Name.Visible = false
 			self.Components.Distance.Visible = false
+			if self.flag == 'npcesp' then 
+				warn(self.Name..' 6')
+			end
 		end
 	else
 		self.Components.Name.Visible = false
