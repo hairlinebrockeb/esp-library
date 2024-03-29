@@ -442,7 +442,7 @@ function boxBase:Update()
 	end
 
 	--calculations--
-	local cf = self.PrimaryPart and self.PrimaryPart.CFrame or self.Object and self.Object:IsA('Model') and CFrame.new(self.Object:IsA('Model').WorldPivot)
+	local cf = self and self.PrimaryPart and self.PrimaryPart.CFrame or self.Object and self.Object:IsA('Model') and CFrame.new(self.Object:IsA('Model').WorldPivot)
 	if ESP.FaceCamera then
 		cf = CFrame.new(cf.p, cam.CFrame.p)
 	end
@@ -505,7 +505,7 @@ function boxBase:Update()
 					-- [100/100]
 					--   Ghost
 					-- 
-                    supposedName = `{supposedSub}[{maxhealth}/{health}]{self.Name}`
+                    supposedName = `{supposedSub}[{maxhealth}/{health}]  {self.Name}`
 					--[[
 					[100/100]
 					aaaa
