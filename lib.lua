@@ -201,9 +201,9 @@ function ESP:CreateOnPath(path, options)
 					obj = v
 				end
 			end) 
-			if obj == nil then 
+			if obj == nil and v:IsA('Model') then 
 				--print('is nil')
-				obj = type(options.PrimaryPart) == "string" and v:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(v) or v.PrimaryPart
+				obj = type(options.PrimaryPart) == "string" and v:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(v) or v.PrimaryPart ~= nil and v.PrimaryPart
 			end
 			if obj then 
 				local DistanceFromObject
