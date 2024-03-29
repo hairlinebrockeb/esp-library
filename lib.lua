@@ -199,6 +199,9 @@ function ESP:CreateOnPath(path, options)
 	end
 	local EspFunction = EspsAssignedToPath.EspFunction
 	EspsAssignedToPath.LookForObjects = function(firstOnly, old)
+		if options.active and options.active() == false then 
+			return
+		end
 		for i,v in next, path:GetChildren() do 
 			--if i == MaximumEsps + 1 and firstOnly == false then break end -- Maximum Allowed
 			if #EspsAssignedToPath >= MaximumEsps then print('max allowed') break end
@@ -242,7 +245,7 @@ function ESP:CreateOnPath(path, options)
 	EspsAssignedToPath.LookForObjects(false)
 	path.ChildAdded:Connect(function(child)
 		task.wait(1)
-		if #EspsAssignedToPath < MaximumEsps then 
+		if #EspsAssignedToPath < MaximumEsps and (not options.active or options.active and options.active() == true) then 
 			local obj = nil
 			pcall(function()
 				if v.Position then 
@@ -275,7 +278,7 @@ function ESP:CreateOnPath(path, options)
 				--break
 			end;
 		end;
-		if #EspsAssignedToPath < MaximumEsps then 
+		if #EspsAssignedToPath < MaximumEsps and (not options.active or options.active and options.active() == true) then 
 			for i,v in next, path:GetChildren() do 
 				local canBreak = false;
 				for _, espChild in next, EspsAssignedToPath do 
@@ -395,9 +398,10 @@ function boxBase:Update()
 		if self.active() == false then allow = false notactive = true end;
 	end
 	if self.removeondisable and notactive == true then 
-		self:Remove()
+		--self:Remove()
 		print('disabled so remove;')
-		return
+		--return
+		return self:Remove()
 	end
 	if self.PrimaryPart and not workspace:IsAncestorOf(self.PrimaryPart) and not self.RenderInNil and not self.usepivot then
 		allow = false
