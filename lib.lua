@@ -165,7 +165,7 @@ function ESP:CreateOnPath(path, options)
         end) -- or child:IsA('Part') or child:IsA('MeshPart') or child:IsA('UnionPart')
 		_addtable = {
 			--PrimaryPart = type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child) or ispart and child ,
-			options.PrimaryPart = child.ClassName == "Model" and (child.PrimaryPart or child:FindFirstChild("HumanoidRootPart") or child:FindFirstChildWhichIsA("BasePart")) or typeof(obj) ~= 'Vector3' and child:IsA("BasePart") and child or ispart and child,
+			options.PrimaryPart = child.ClassName == "Model" and (child.PrimaryPart or child:FindFirstChild("HumanoidRootPart") or child:FindFirstChildWhichIsA("BasePart")) or typeof(child) ~= 'Vector3' and child:IsA("BasePart") and child or ispart and child,
 			Color = type(options.Color) == "function" and options.Color or options.Color,
 			ColorDynamic = options.ColorDynamic,
 			Name = type(options.Name) == 'string' and options.Name or type(options.Name) == 'function' and options.Name or options.SelfHumanoidName and child.Name or options.SelfName and child.Name or child.Name,
@@ -222,7 +222,7 @@ function ESP:CreateOnPath(path, options)
 			end) 
 			if obj == nil and v:IsA('Model') then 
 				--print('is nil')
-				obj = v --type(options.PrimaryPart) == "string" and v:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(v) or v.PrimaryPart ~= nil and v.PrimaryPart
+				obj = type(options.PrimaryPart) == "string" and v:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(v) or v.PrimaryPart ~= nil and v.PrimaryPart
 			end
 			if obj then 
 				local DistanceFromObject
