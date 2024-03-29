@@ -477,7 +477,22 @@ function boxBase:Update()
 					local nameget = self.Object and self.Object.Name or self.Player and self.Player.Name
                     local halfofname = math.floor(string.len(nameget)/2) -- self.Name             --+1 -- (could make it just +1 if the len is an odd number)
 					-- odd number (15%2 == 1), (16%2 == 0) (1 = odd, 2 = even)
-                    supposedName = `{string.rep(' ',halfofname)}[{maxhealth}/{health}]\n{self.Name}`
+					local lenofnormal = '[100/100]'
+					local supposedSub = string.rep(' ',halfofname)
+					if string.len(lenofnormal) > string.len(nameget) then 
+						supposedSub = string.rep(' ',halfofname/2)
+					end
+					supposedSub = ''
+					-- [100/100]
+					--   Ghost
+					-- 
+                    supposedName = `{supposedSub}[{maxhealth}/{health}]{self.Name}`
+					--[[
+					[100/100]
+					aaaa
+					111 meters away
+					
+					]]
                 end
             end
 			self.Components.Name.Text = supposedName --self.Name
