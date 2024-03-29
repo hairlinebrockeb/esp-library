@@ -445,7 +445,7 @@ function boxBase:Update()
 	end
 
 	--calculations--
-	local cf = self and self.PrimaryPart and self.PrimaryPart.CFrame or self.Object and self.Object:IsA('Model') and CFrame.new(self.Object:IsA('Model').WorldPivot)
+	local cf = self and self.PrimaryPart and self.PrimaryPart.CFrame or self.Object and self.Object:IsA('Model') and CFrame.new(self.Object.WorldPivot)
 	if ESP.FaceCamera then
 		cf = CFrame.new(cf.p, cam.CFrame.p)
 	end
@@ -738,4 +738,3 @@ game:GetService("RunService").RenderStepped:Connect(function()
 	-- end
 end)
 return ESP
- 
