@@ -445,7 +445,7 @@ function boxBase:Update()
 	end
 
 	--calculations--
-	local cf = self and self.PrimaryPart and self.PrimaryPart.CFrame or self.Object and self.Object:IsA('Model') and self.Object.WorldPivot.Position --CFrame.new()
+	local cf = self and self.PrimaryPart and self.PrimaryPart.CFrame or self.Object and self.Object:IsA('Model') and self.Object.WorldPivot --CFrame.new()
 	if ESP.FaceCamera then
 		cf = CFrame.new(cf.p, cam.CFrame.p)
 	end
