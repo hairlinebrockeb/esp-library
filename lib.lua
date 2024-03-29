@@ -163,7 +163,7 @@ function ESP:CreateOnPath(path, options)
                 ispart = true
             end
         end) -- or child:IsA('Part') or child:IsA('MeshPart') or child:IsA('UnionPart')
-		ESP:Add(child,{
+		_addtable = {
 			PrimaryPart = type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child) or ispart and child ,
 			Color = type(options.Color) == "function" and options.Color or options.Color,
 			ColorDynamic = options.ColorDynamic,
@@ -185,7 +185,17 @@ function ESP:CreateOnPath(path, options)
 					end;
 				end;
 			end;
-		})
+			maxdistance = options.maxdistance;
+			active = options.active;
+			removeondisable = options.removeondisable;
+			usepivot = options.usepivot;
+		}
+		-- for i,v in next, options do 
+		-- 	if not addtable[i] then 
+		-- 		addtable[i] = v
+		-- 	end
+		-- end;
+		ESP:Add(child,_addtable)
 	end
 	local EspFunction = EspsAssignedToPath.EspFunction
 	EspsAssignedToPath.LookForObjects = function(firstOnly, old)
@@ -397,7 +407,7 @@ function boxBase:Update()
 	end
 
 	if dist == nil and not self.PrimaryPart and self.Object:IsA('Model') then --self.PrimaryPart == nil
-		dist = (self.Object.WorldPivot - cam.CFrame.p).Position.Magnitude
+		dist = (self.Object.WorldPivot.Position - cam.CFrame.p).Magnitude
 	end -- offloaded npc
 
 	if self.distance then  -- and self.distance < dist 
