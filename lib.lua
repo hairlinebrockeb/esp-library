@@ -164,7 +164,8 @@ function ESP:CreateOnPath(path, options)
             end
         end) -- or child:IsA('Part') or child:IsA('MeshPart') or child:IsA('UnionPart')
 		_addtable = {
-			PrimaryPart = type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child) or ispart and child ,
+			--PrimaryPart = type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child) or ispart and child ,
+			options.PrimaryPart = child.ClassName == "Model" and (child.PrimaryPart or child:FindFirstChild("HumanoidRootPart") or child:FindFirstChildWhichIsA("BasePart")) or typeof(obj) ~= 'Vector3' and child:IsA("BasePart") and child or ispart and child,
 			Color = type(options.Color) == "function" and options.Color or options.Color,
 			ColorDynamic = options.ColorDynamic,
 			Name = type(options.Name) == 'string' and options.Name or type(options.Name) == 'function' and options.Name or options.SelfHumanoidName and child.Name or options.SelfName and child.Name or child.Name,
@@ -221,7 +222,7 @@ function ESP:CreateOnPath(path, options)
 			end) 
 			if obj == nil and v:IsA('Model') then 
 				--print('is nil')
-				obj = type(options.PrimaryPart) == "string" and v:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(v) or v.PrimaryPart ~= nil and v.PrimaryPart
+				obj = v --type(options.PrimaryPart) == "string" and v:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(v) or v.PrimaryPart ~= nil and v.PrimaryPart
 			end
 			if obj then 
 				local DistanceFromObject
@@ -239,7 +240,7 @@ function ESP:CreateOnPath(path, options)
 					shouldstopnow = true;
 				end	
 			end
-			if firstOnly and shouldstopnow then task.wait() print('replaced removed') break end
+			if firstOnly and shouldstopnow then task.wait()  break end -- print('replaced removed')
 		end
 	end	
 	EspsAssignedToPath.LookForObjects(false)
@@ -252,21 +253,24 @@ function ESP:CreateOnPath(path, options)
 					obj = v
 				end
 			end) 
-			if obj == nil then 
-				if child:FindFirstChildOfClass('BasePart') then 
-					obj = child:FindFirstChildOfClass('BasePart')
-				end
-			end
-			if obj == nil and v:IsA('Model') then 
+			-- if obj == nil then 
+			-- 	if child:FindFirstChildOfClass('BasePart') then 
+			-- 		obj = child:FindFirstChildOfClass('BasePart')
+			-- 	end
+			-- end
+			if v:IsA('Model') then 
 				obj = child:IsA('Model') and child.PrimaryPart ~= nil and child.PrimaryPart  or type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child)
 			end
 			if type(obj) == 'boolean' then 
 				return --warn(obj.Name, 'boolean no esp');
 			end
-			if obj:IsA('BasePart') then 
+			if obj then 
 				local DistanceFromObject = (obj.CFrame.Position - cam.CFrame.p).Magnitude 
 				if DistanceFromObject <= options.distance() then 
-					EspFunction(child)
+					if v:IsA('Model') then 
+						-- set obj to v
+					end
+					EspFunction(obj:IsA('Model') and obj.Parent or obj) --chobjild)
 				end	
 			end
 		end
@@ -289,11 +293,11 @@ function ESP:CreateOnPath(path, options)
 								obj = v
 							end
 						end) 
-						if obj == nil then 
-							if child:FindFirstChildOfClass('BasePart') then 
-								obj = child:FindFirstChildOfClass('BasePart')
-							end
-						end
+						-- if obj == nil then 
+						-- 	if child:FindFirstChildOfClass('BasePart') then 
+						-- 		obj = child:FindFirstChildOfClass('BasePart')
+						-- 	end
+						-- end
 						if obj == nil and v:IsA('Model') then 
 							obj = v:IsA('Model') and v.PrimaryPart ~= nil and v.PrimaryPart  or type(options.PrimaryPart) == "string" and v:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(v)
 						end
