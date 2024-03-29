@@ -247,6 +247,9 @@ function ESP:CreateOnPath(path, options)
 			if obj == nil then 
 				obj = child:IsA('Model') and child.PrimaryPart ~= nil and child.PrimaryPart  or type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child)
 			end
+			if type(obj) == 'boolean' then 
+				return warn(obj.Name, 'boolean no esp');
+			end
 			if obj:IsA('BasePart') then 
 				local DistanceFromObject = (obj.CFrame.Position - cam.CFrame.p).Magnitude 
 				if DistanceFromObject <= options.distance() then 
