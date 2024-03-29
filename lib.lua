@@ -423,7 +423,7 @@ function boxBase:Update()
 		allow = false;
 		-- could merge the two (if self.Player) functions here (setting color and setting visibility)
 	end
-	if options.flag == 'npcesp' then 
+	if self.flag == 'npcesp' then 
 		warn(obj.Name..' 3')
 	end
 
@@ -431,7 +431,7 @@ function boxBase:Update()
 		for i,v in pairs(self.Components) do
 			v.Visible = false
 		end
-		if options.flag == 'npcesp' then 
+		if self.flag == 'npcesp' then 
 			warn(obj.Name..' 4')
 		end
 		return
