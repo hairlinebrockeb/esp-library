@@ -203,22 +203,24 @@ function ESP:CreateOnPath(path, options)
 			end) 
 			if obj == nil then 
 				--print('is nil')
-				obj = type(options.PrimaryPart) == "string" and v:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(v)
+				obj = type(options.PrimaryPart) == "string" and v:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(v) or v.PrimaryPart
 			end
-			local DistanceFromObject
-			if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.PrimaryPart then 
-				DistanceFromObject = (obj.CFrame.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).Magnitude
-			else
-				DistanceFromObject = (obj.CFrame.Position - cam.CFrame.p).Magnitude
-			end	
-			 --= (obj.CFrame.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).Magnitude --cam.CFrame.p).Magnitude 
-			if DistanceFromObject <= options.distance() and v ~= old and canUse == true then 
-				if firstOnly then 
-					---print('ASSIGNING',obj.Name,DistanceFromObject)
+			if obj then 
+				local DistanceFromObject
+				if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.PrimaryPart then 
+					DistanceFromObject = (obj.CFrame.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).Magnitude
+				else
+					DistanceFromObject = (obj.CFrame.Position - cam.CFrame.p).Magnitude
 				end	
-				EspsAssignedToPath.EspFunction(obj)
-				shouldstopnow = true;
-			end	
+				 --= (obj.CFrame.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).Magnitude --cam.CFrame.p).Magnitude 
+				if DistanceFromObject <= options.distance() and v ~= old and canUse == true then 
+					if firstOnly then 
+						---print('ASSIGNING',obj.Name,DistanceFromObject)
+					end	
+					EspsAssignedToPath.EspFunction(obj)
+					shouldstopnow = true;
+				end	
+			end
 			if firstOnly and shouldstopnow then task.wait() print('replaced removed') break end
 		end
 	end	
