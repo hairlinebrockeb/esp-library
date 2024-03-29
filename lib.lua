@@ -167,7 +167,7 @@ function ESP:CreateOnPath(path, options)
 			PrimaryPart = type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child) or ispart and child ,
 			Color = type(options.Color) == "function" and options.Color or options.Color,
 			ColorDynamic = options.ColorDynamic,
-			Name = type(options.CustomName) == "function" and options.CustomName or options.CustomName or options.SelfName and child.Name,
+			Name = Name = type(options.Name) == 'string' and options.Name or type(options.Name) == 'function' and options.Name or options.SelfName and obj.Name or obj.Name,
 			IsEnabled = options.IsEnabled,
 			RenderInNil = options.RenderInNil,
 			flag = options.flag;
@@ -347,7 +347,7 @@ function boxBase:Update()
 	if not self.PrimaryPart and not self.usepivot then -- self.usepivot == false
 		--warn("not supposed to print", self.Object)
 		if self.flag == 'npcesp' then 
-			warn(self.Name..' 7')
+			--warn(self.Name..' 7')
 		end
 		return self:Remove()
 	end
@@ -437,7 +437,7 @@ function boxBase:Update()
 		-- could merge the two (if self.Player) functions here (setting color and setting visibility)
 	end
 	if self.flag == 'npcesp' then 
-		warn(self.Name..' 3')
+		--warn(self.Name..' 3')
 	end
 
 	if not allow then
@@ -445,7 +445,7 @@ function boxBase:Update()
 			v.Visible = false
 		end
 		if self.flag == 'npcesp' then 
-			warn(self.Name..' 4')
+			--warn(self.Name..' 4')
 		end
 		return
 	end
@@ -543,14 +543,14 @@ function boxBase:Update()
 			self.Components.Name.Visible = false
 			self.Components.Distance.Visible = false
 			if self.flag == 'npcesp' then 
-				warn(self.Name..' 6')
+				--warn(self.Name..' 6')
 			end
 		end
 	else
 		self.Components.Name.Visible = false
 		self.Components.Distance.Visible = false
 		if self.flag == 'npcesp' then 
-			warn(self.Name..' 5')
+			--warn(self.Name..' 5')
 		end
 	end
 	
@@ -596,7 +596,7 @@ function ESP:Add(obj, options)
 		niliszero = true --options.RenderInNil = true;
 	end
 	if options.flag == 'npcesp' then 
-		warn(obj.Name..' 1')
+		--warn(obj.Name..' 1')
 	end
 
 	local box = setmetatable({
@@ -667,7 +667,7 @@ function ESP:Add(obj, options)
 	end
 	self.Objects[obj] = box
 	if options.flag == 'npcesp' then 
-		warn(obj.Name..' 2')
+		--warn(obj.Name..' 2')
 	end
 	
 	obj.AncestryChanged:Connect(function(_, parent)
