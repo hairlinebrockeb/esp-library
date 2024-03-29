@@ -336,6 +336,9 @@ end
 function boxBase:Update()
 	if not self.PrimaryPart and not self.usepivot then -- self.usepivot == false
 		--warn("not supposed to print", self.Object)
+		if self.flag == 'npcesp' then 
+			warn(self.Name..' 7')
+		end
 		return self:Remove()
 	end
 
