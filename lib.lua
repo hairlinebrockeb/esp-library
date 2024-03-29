@@ -335,6 +335,11 @@ function boxBase:Update()
 		color = type(self.Color) == 'function' and self.Color() or self.Color or self.ColorDynamic and self:ColorDynamic() or ESP:GetColor(self.Object) or ESP.Color
 	end
 
+	if self.Player ~= nil then -- color == ESP.Color would only work once
+		color = ESP.Settings.playerespcolor
+		-- could add removewhennotindistance for players
+	end
+
 	local allow = true
 	if ESP.Overrides.UpdateAllow and not ESP.Overrides.UpdateAllow(self) then
 		allow = false
@@ -378,7 +383,7 @@ function boxBase:Update()
 		--allow = false -- if self.
 		local distget = self.distance()
 		--warn(distget)
-		if dist >= distget then -- distget  dist then --if dist < distget then 
+		if dist > distget then -- distget  dist then --if dist < distget then   was initially >=
 			allow = false;
 			if self.renderclosest and (dist-distget) > 20 then 
 			--	print(dist,distget)
@@ -396,7 +401,10 @@ function boxBase:Update()
 		--	print('dist bigger than max ')
 		end
 	end
-
+	if self.Player and dist > ESP.Settings.playerespdistance then 
+		allow = false;
+		-- could merge the two (if self.Player) functions here (setting color and setting visibility)
+	end
 	if not allow then
 		for i,v in pairs(self.Components) do
 			v.Visible = false
