@@ -240,8 +240,8 @@ function ESP:CreateOnPath(path, options)
 				end
 			end) 
 			if obj == nil then 
-				if v:FindFirstChildOfClass('BasePart') then 
-					obj = v:FindFirstChildOfClass('BasePart')
+				if child:FindFirstChildOfClass('BasePart') then 
+					obj = child:FindFirstChildOfClass('BasePart')
 				end
 			end
 			if obj == nil then 
@@ -380,11 +380,18 @@ function boxBase:Update()
 
 	-- 	end
 	-- end)
-	if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.PrimaryPart then 
-		dist = (self.PrimaryPart.CFrame.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).Magnitude
-	else
-		dist = (self.PrimaryPart.CFrame.Position - cam.CFrame.p).Magnitude
-	end	
+	if self.PrimaryPart ~= nil then 
+		if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.PrimaryPart then 
+			dist = (self.PrimaryPart.CFrame.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).Magnitude
+		else
+			dist = (self.PrimaryPart.CFrame.Position - cam.CFrame.p).Magnitude
+		end	
+	end
+
+	if dist == nil and self.PrimaryPart == nil and self.Object:IsA('Model') then 
+		dist = (self.Object.WorldPivot - cam.CFrame.p).Magnitude
+	end -- offloaded npc
+
 	if self.distance then  -- and self.distance < dist 
 		--allow = false -- if self.
 		local distget = self.distance()
@@ -423,7 +430,7 @@ function boxBase:Update()
 	end
 
 	--calculations--
-	local cf = self.PrimaryPart.CFrame
+	local cf = self.PrimaryPart and self.PrimaryPart.CFrame or self.Object and self.Object:IsA('Model') and CFrame.new(self.Object:IsA('Model').WorldPivot)
 	if ESP.FaceCamera then
 		cf = CFrame.new(cf.p, cam.CFrame.p)
 	end
@@ -535,24 +542,36 @@ function boxBase:Update()
 end
 
 function ESP:Add(obj, options)
-	if not obj.Parent and not options.RenderInNil then
+	if not obj.Parent and not options.RenderInNil and typeof(obj) ~= 'Vector3' then
 		return warn(obj, "has no parent")
 	end
     local ispart = false
     pcall(function()
-        if ispart.Position then 
+        if ispart.Position and typeof(obj) ~= 'Vector3' then 
             ispart = true
         end
     end)
 
+	-- create a part to act in the position
+	-- or just create an esp with that position
+
+	if typeof(obj) == 'Vector3' then 
+		--local replacement = Instance.new('Part');
+		--replacement
+	end
+	local niliszero = false
+	if #obj:GetChildren() == 0  then -- and options.offload
+		niliszero = true --options.RenderInNil = true;
+	end
+
 	local box = setmetatable({
-		Name = type(options.Name) == 'string' and options.Name or type(options.Name) == 'function' and options.Name or obj.Name,
+		Name = type(options.Name) == 'string' and options.Name or type(options.Name) == 'function' and options.Name or options.SelfName and obj.Name or obj.Name,
 		Type = "Box",
 		Color = type(options.Color) == 'function' and options.Color or options.Color --[[or self:GetColor(obj)]],
 		Size = options.Size or self.BoxSize,
 		Object = obj,
-		Player = options.Player or plrs:GetPlayerFromCharacter(obj),
-		PrimaryPart = options.PrimaryPart or obj.ClassName == "Model" and (obj.PrimaryPart or obj:FindFirstChild("HumanoidRootPart") or obj:FindFirstChildWhichIsA("BasePart")) or obj:IsA("BasePart") and obj or ispart and obj,
+		Player = options.Player or typeof(obj) ~= 'Vector3' and plrs:GetPlayerFromCharacter(obj),
+		PrimaryPart = options.PrimaryPart or typeof(obj) ~= 'Vector3' and obj.ClassName == "Model" and (obj.PrimaryPart or obj:FindFirstChild("HumanoidRootPart") or obj:FindFirstChildWhichIsA("BasePart")) or typeof(obj) ~= 'Vector3' and obj:IsA("BasePart") and obj or ispart and obj,
 		Components = {},
 		IsEnabled = options.IsEnabled,
 		Temporary = options.Temporary,
@@ -571,8 +590,10 @@ function ESP:Add(obj, options)
 		removeondisable = options.removeondisable
 	}, boxBase)
 
-	if self:GetBox(obj) then
+	if typeof(obj) ~= 'Vector3' and self:GetBox(obj) then
 		self:GetBox(obj):Remove()
+	elseif typeof(obj) == 'Vector3' and self:GetBox(obj) then 
+
 	end
 
 	if not options.NoBox then 
