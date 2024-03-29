@@ -160,7 +160,7 @@ function ESP:CreateOnPath(path, options)
         end) -- or child:IsA('Part') or child:IsA('MeshPart') or child:IsA('UnionPart')
 		ESP:Add(child,{
 			PrimaryPart = type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child) or ispart and child ,
-			Color = type(options.Color) == "function" and options.Color(child) or options.Color,
+			Color = type(options.Color) == "function" and options.Color or options.Color,
 			ColorDynamic = options.ColorDynamic,
 			Name = type(options.CustomName) == "function" and options.CustomName or options.CustomName or options.SelfName and child.Name,
 			IsEnabled = options.IsEnabled,
@@ -325,7 +325,7 @@ function boxBase:Update()
 	if ESP.Highlighted == self.Object then
 	   color = ESP.HighlightColor
 	else
-		color = self.Color or self.ColorDynamic and self:ColorDynamic() or ESP:GetColor(self.Object) or ESP.Color
+		color = type(self.Color) == 'function' and self.Color or self.Color or self.ColorDynamic and self:ColorDynamic() or ESP:GetColor(self.Object) or ESP.Color
 	end
 
 	local allow = true
@@ -509,7 +509,7 @@ function ESP:Add(obj, options)
 	local box = setmetatable({
 		Name = type(options.Name) == 'string' and options.Name or type(options.Name) == 'function' and options.Name or obj.Name,
 		Type = "Box",
-		Color = type(options.Color) == 'function' and options.Color() or options.Color --[[or self:GetColor(obj)]],
+		Color = type(options.Color) == 'function' and options.Color or options.Color --[[or self:GetColor(obj)]],
 		Size = options.Size or self.BoxSize,
 		Object = obj,
 		Player = options.Player or plrs:GetPlayerFromCharacter(obj),
@@ -547,7 +547,7 @@ function ESP:Add(obj, options)
 	end
 	box.Components["Name"] = Draw("Text", {
 		Text = type(box.Name) == 'function' and box.Name() or box.Name,
-		Color = box.Color,
+		Color = type(box.Color) == 'function' and box.Color() or box.Color, -- box.Color -- table support (r,g,b)
 		Center = true,
 		Outline = true,
 		Size = 19,
@@ -564,7 +564,7 @@ function ESP:Add(obj, options)
 	if not options.NoTracer then 
 		box.Components["Tracer"] = Draw("Line", {
 			Thickness = ESP.Thickness,
-			Color = box.Color,
+			Color = type(box.Color) == 'function' and box.Color() or box.Color, --
 			Transparency = 1,
 			Visible = self.Enabled and self.Tracers
 		})
