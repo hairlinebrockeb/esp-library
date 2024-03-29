@@ -397,7 +397,7 @@ function boxBase:Update()
 	end
 
 	if dist == nil and not self.PrimaryPart and self.Object:IsA('Model') then --self.PrimaryPart == nil
-		dist = (self.Object.WorldPivot - cam.CFrame.p).Magnitude
+		dist = (self.Object.WorldPivot - cam.CFrame.p).Position.Magnitude
 	end -- offloaded npc
 
 	if self.distance then  -- and self.distance < dist 
@@ -738,4 +738,3 @@ game:GetService("RunService").RenderStepped:Connect(function()
 	-- end
 end)
 return ESP
- 
