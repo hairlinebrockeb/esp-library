@@ -396,7 +396,7 @@ function boxBase:Update()
 		end	
 	end
 
-	if dist == nil and self.PrimaryPart == nil and self.Object:IsA('Model') then 
+	if dist == nil and not self.PrimaryPart and self.Object:IsA('Model') then --self.PrimaryPart == nil
 		dist = (self.Object.WorldPivot - cam.CFrame.p).Magnitude
 	end -- offloaded npc
 
