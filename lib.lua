@@ -231,6 +231,7 @@ function ESP:CreateOnPath(path, options)
 	end	
 	EspsAssignedToPath.LookForObjects(false)
 	path.ChildAdded:Connect(function(child)
+		task.wait(1)
 		if #EspsAssignedToPath < MaximumEsps then 
 			local obj = nil
 			pcall(function()
@@ -239,7 +240,12 @@ function ESP:CreateOnPath(path, options)
 				end
 			end) 
 			if obj == nil then 
-				obj = child.PrimaryPart ~= nil and child.PrimaryPart  or type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child)
+				if v:FindFirstChildOfClass('BasePart') then 
+					obj = v:FindFirstChildOfClass('BasePart')
+				end
+			end
+			if obj == nil then 
+				obj = child:IsA('Model') and child.PrimaryPart ~= nil and child.PrimaryPart  or type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child)
 			end
 			local DistanceFromObject = (obj.CFrame.Position - cam.CFrame.p).Magnitude 
 			if DistanceFromObject <= options.distance() then 
