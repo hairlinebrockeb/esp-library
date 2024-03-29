@@ -327,7 +327,7 @@ function boxBase:Update()
 	if ESP.Highlighted == self.Object then
 	   color = ESP.HighlightColor
 	else
-		color = type(self.Color) == 'function' and self.Color or self.Color or self.ColorDynamic and self:ColorDynamic() or ESP:GetColor(self.Object) or ESP.Color
+		color = type(self.Color) == 'function' and self.Color() or self.Color or self.ColorDynamic and self:ColorDynamic() or ESP:GetColor(self.Object) or ESP.Color
 	end
 
 	local allow = true
