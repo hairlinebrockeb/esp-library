@@ -257,7 +257,7 @@ function ESP:CreateOnPath(path, options)
 			-- 		obj = child:FindFirstChildOfClass('BasePart')
 			-- 	end
 			-- end
-			if v:IsA('Model') then 
+			if child:IsA('Model') then 
 				obj = child:IsA('Model') and child.PrimaryPart ~= nil and child.PrimaryPart  or type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child)
 			end
 			if type(obj) == 'boolean' then 
