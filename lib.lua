@@ -554,7 +554,7 @@ function ESP:Add(obj, options)
 		Visible = self.Enabled and self.Names
 	})
 	box.Components["Distance"] = Draw("Text", {
-		Color = box.Color,
+		Color = type(box.Color) == 'function' and box.Color() or box.Color,
 		Center = true,
 		Outline = true,
 		Size = 19,
