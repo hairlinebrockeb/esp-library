@@ -248,7 +248,7 @@ function ESP:CreateOnPath(path, options)
 				obj = child:IsA('Model') and child.PrimaryPart ~= nil and child.PrimaryPart  or type(options.PrimaryPart) == "string" and child:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(child)
 			end
 			if type(obj) == 'boolean' then 
-				return warn(obj.Name, 'boolean no esp');
+				return --warn(obj.Name, 'boolean no esp');
 			end
 			if obj:IsA('BasePart') then 
 				local DistanceFromObject = (obj.CFrame.Position - cam.CFrame.p).Magnitude 
@@ -388,7 +388,7 @@ function boxBase:Update()
 
 	-- 	end
 	-- end)
-	if self.PrimaryPart ~= nil then 
+	if self.PrimaryPart ~= nil and type(self.PrimaryPart) ~= 'boolean' then 
 		if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.PrimaryPart then 
 			dist = (self.PrimaryPart.CFrame.Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).Magnitude
 		else
