@@ -377,7 +377,7 @@ function boxBase:Update()
 		color = type(self.Color) == 'function' and self.Color() or self.Color or self.ColorDynamic and self:ColorDynamic() or ESP:GetColor(self.Object) or ESP.Color
 	end
 
-	if self.Player ~= nil then -- color == ESP.Color would only work once
+	if self.Player ~= nil and not self.usecustomespcolor then -- color == ESP.Color would only work once
 		color = ESP.Settings.playerespcolor
 		-- could add removewhennotindistance for players
 	end
@@ -642,7 +642,8 @@ function ESP:Add(obj, options)
 		maxdistance = options.maxdistance;
 		active = options.active;
 		removeondisable = options.removeondisable;
-		usepivot = options.usepivot
+		usepivot = options.usepivot;
+		usecustomespcolor = options.usecustomespcolor;
 	}, boxBase)
 
 	if typeof(obj) ~= 'Vector3' and self:GetBox(obj) then
