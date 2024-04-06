@@ -384,7 +384,7 @@ function boxBase:Update()
 		color = type(self.Color) == 'function' and self.Color() or self.Color or self.ColorDynamic and self:ColorDynamic() or ESP:GetColor(self.Object) or ESP.Color
 	end
 
-	if self.Player ~= nil and not self.Settings.usecustomespcolor then -- color == ESP.Color would only work once
+	if self.Player ~= nil and not ESP.Settings.usecustomespcolor then -- color == ESP.Color would only work once
 		color = ESP.Settings.playerespcolor
 		-- could add removewhennotindistance for players
 	end
