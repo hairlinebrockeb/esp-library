@@ -1,4 +1,7 @@
 --Settings--
+if getgenv().ESP then 
+	getgenv().ESP.CON:Disconnect()
+end
 getgenv().ESP = getgenv().ESP or {
 	Enabled = false,
 	Boxes = true,
@@ -21,8 +24,12 @@ getgenv().ESP = getgenv().ESP or {
 		playerespcolor = Color3.fromRGB(255, 170, 0);
 		playerespdistance = 10000;
 		HandlePlayerClient = false; -- Players = true wont make esps
+		usecustomespcolor = false;
 	};
 }
+for i,v in next, getgenv().ESP.Objects  do 
+	v:Remove()
+end
 
 --Declarations--
 local cam = workspace.CurrentCamera
@@ -377,7 +384,7 @@ function boxBase:Update()
 		color = type(self.Color) == 'function' and self.Color() or self.Color or self.ColorDynamic and self:ColorDynamic() or ESP:GetColor(self.Object) or ESP.Color
 	end
 
-	if self.Player ~= nil and not self.usecustomespcolor then -- color == ESP.Color would only work once
+	if self.Player ~= nil and not self.Settings.usecustomespcolor then -- color == ESP.Color would only work once
 		color = ESP.Settings.playerespcolor
 		-- could add removewhennotindistance for players
 	end
@@ -750,7 +757,7 @@ end
 
 
 
-game:GetService("RunService").RenderStepped:Connect(function()
+ESP.CON = game:GetService("RunService").RenderStepped:Connect(function()
 	cam = workspace.CurrentCamera
 	if ESP.Enabled == true then 
 		for i,v in next, ESP.Objects do 
