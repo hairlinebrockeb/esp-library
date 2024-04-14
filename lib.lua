@@ -31,6 +31,27 @@ for i,v in next, getgenv().ESP.Objects  do
 	v:Remove()
 end
 
+local function declareCtn()
+	ESP.CON = game:GetService("RunService").RenderStepped:Connect(function()
+		cam = workspace.CurrentCamera
+		if ESP.Enabled == true then 
+			for i,v in next, ESP.Objects do 
+				if v.Update then
+					v.Update(v)
+				end	
+			end	
+		else
+			ESP.CON:Disconnect()
+		end	
+		-- for i,v in (ESP.Enabled and pairs or ipairs)(ESP.Objects) do
+		-- 	if v.Update then
+		--         v.Update(v)
+		-- 		--local s,e = pcall(v.Update, v)
+		-- 		--if not s then warn("[EU]", e, v.Object:GetFullName()) end
+		-- 	end
+		-- end
+	end)
+end
 --Declarations--
 local cam = workspace.CurrentCamera
 local plrs = game:GetService("Players")
@@ -89,6 +110,9 @@ end
 
 function ESP:Toggle(bool)
 	self.Enabled = bool
+	if bool == true and ESP.CON == nil then 	
+		declareCtn()
+	end
 	if not bool then
 		for i,v in pairs(self.Objects) do
 			if v.Type == "Box" then --fov circle etc
@@ -100,7 +124,11 @@ function ESP:Toggle(bool)
 					end
 				end
 			end
-		end
+		end	
+		pcall(function()
+			ESP.CON:Disconnect() --declareCtn()
+		end)
+		ESP.CON = nil
 	end
 end
 
@@ -466,6 +494,10 @@ function boxBase:Update()
 		--warn(self.Name..' 3')
 	end
 
+	if self.Player and not self.PrimaryPart then 
+		return self:Remove()
+	end;	
+
 	if not allow then
 		for i,v in pairs(self.Components) do
 			v.Visible = false
@@ -475,6 +507,7 @@ function boxBase:Update()
 		end
 		return
 	end
+
 
 	if ESP.Highlighted == self.Object then
 		color = ESP.HighlightColor
@@ -495,7 +528,10 @@ function boxBase:Update()
 		Torso = cf * ESP.BoxShift
 	}
 	local offset = self.offset or Vector2.new(0,0)
-	if ESP.Boxes and self.Components.Quad   then
+	if ESP.Boxes and  self.NoBox == false   then -- self.Components.Quad and
+		if not self.Components['Quad'] then 
+			self.Components['Quad'] = ESP:CreateProperty('box',self)  
+		end
 		local TopLeft, Vis1 = WorldToViewportPoint(cam, locs.TopLeft.p)
 		local TopRight, Vis2 = WorldToViewportPoint(cam, locs.TopRight.p)
 		local BottomLeft, Vis3 = WorldToViewportPoint(cam, locs.BottomLeft.p)
@@ -516,12 +552,19 @@ function boxBase:Update()
 	else
 		if self.Components.Quad  then 
 			self.Components.Quad.Visible = false
+			self.Components["Quad"]:Remove()
+			self.Components["Quad"] = nil
 		end
 	end
 
 	if ESP.Names then
 		local TagPos, Vis5 = WorldToViewportPoint(cam, locs.TagPos.p)
-		
+		if not self.Components['Name'] then  -- Compensation
+			box.Components["Name"] = ESP:CreateProperty('name', self) 
+		end
+		if not self.Components['Distance'] then  -- Compensation
+			box.Components["Distance"] = ESP:CreateProperty('name',self)  
+		end
 		if Vis5 then
 			self.Components.Name.Visible = true
 			self.Components.Name.Position = Vector2.new(TagPos.X, TagPos.Y) + offset
@@ -575,14 +618,24 @@ function boxBase:Update()
 	else
 		self.Components.Name.Visible = false
 		self.Components.Distance.Visible = false
-		if self.flag == 'npcesp' then 
-			--warn(self.Name..' 5')
+		if self.Components['Name'] then  -- Compensation
+			self.Components["Name"]:Remove()
+			self.Components["Name"] = nil
 		end
+		if self.Components['Distance'] then  -- Compensation
+			self.Components["Distance"]:Remove()
+			self.Components["Distance"] = nil
+		end
+		-- if self.flag == 'npcesp' then 
+		-- 	--warn(self.Name..' 5')
+		-- end
 	end
 	
-	if ESP.Tracers and self.Components.Tracer then
+	if ESP.Tracers and self.NoTracer == false then -- and self.Components.Tracer 
 		local TorsoPos, Vis6 = WorldToViewportPoint(cam, locs.Torso.p)
-
+		if not self.Components['Tracer'] then 
+			ESP:CreateProperty('tracer', self)
+		end
 		if Vis6 then
 			self.Components.Tracer.Visible = true
 			self.Components.Tracer.From = Vector2.new(TorsoPos.X, TorsoPos.Y)
@@ -594,10 +647,40 @@ function boxBase:Update()
 	else
 		if self.Components.Tracer then 
 			self.Components.Tracer.Visible = false
+			self.Components["Tracer"]:Remove()
+			self.Components["Tracer"] = nil
 		end
 	end
 end
-
+function ESP:CreateProperty(property, box) -- Name @ box   usage
+	local returning = nil ;
+	if property == 'name' then 
+		returning = Draw("Text", {
+			Text = type(box.Name) == 'function' and box.Name() or box.Name,
+			Color = type(box.Color) == 'function' and box.Color() or box.Color, -- box.Color -- table support (r,g,b)
+			Center = true,
+			Outline = true,
+			Size = 19,
+			Visible = self.Enabled and self.Names
+		})
+	elseif property == 'box' then 
+		returning = Draw("Quad", {
+			Thickness = self.Thickness,
+			Color = color,
+			Transparency = 1,
+			Filled = false,
+			Visible = self.Enabled and self.Boxes
+		})
+	elseif property == 'tracer' then 
+		returning = Draw("Line", {
+			Thickness = ESP.Thickness,
+			Color = type(box.Color) == 'function' and box.Color() or box.Color, --
+			Transparency = 1,
+			Visible = self.Enabled and self.Tracers
+		})
+	end
+	return returning
+end
 function ESP:Add(obj, options)
 	if not obj.Parent and not options.RenderInNil and typeof(obj) ~= 'Vector3' then
 		return warn(obj, "has no parent")
@@ -660,37 +743,41 @@ function ESP:Add(obj, options)
 	end
 
 	if not options.NoBox then 
-		box.Components["Quad"] = Draw("Quad", {
-			Thickness = self.Thickness,
-			Color = color,
-			Transparency = 1,
-			Filled = false,
-			Visible = self.Enabled and self.Boxes
-		})
+		box.Components["Quad"] = ESP:CreateProperty('box',box) 
+		-- Draw("Quad", {
+		-- 	Thickness = self.Thickness,
+		-- 	Color = color,
+		-- 	Transparency = 1,
+		-- 	Filled = false,
+		-- 	Visible = self.Enabled and self.Boxes
+		-- })
 	end
-	box.Components["Name"] = Draw("Text", {
-		Text = type(box.Name) == 'function' and box.Name() or box.Name,
-		Color = type(box.Color) == 'function' and box.Color() or box.Color, -- box.Color -- table support (r,g,b)
-		Center = true,
-		Outline = true,
-		Size = 19,
-		Visible = self.Enabled and self.Names
-	})
-	box.Components["Distance"] = Draw("Text", {
-		Color = type(box.Color) == 'function' and box.Color() or box.Color,
-		Center = true,
-		Outline = true,
-		Size = 19,
-		Visible = self.Enabled and self.Names
-	})
+	box.Components["Name"] = ESP:CreateProperty('name',box) 
+	-- Draw("Text", {
+	-- 	Text = type(box.Name) == 'function' and box.Name() or box.Name,
+	-- 	Color = type(box.Color) == 'function' and box.Color() or box.Color, -- box.Color -- table support (r,g,b)
+	-- 	Center = true,
+	-- 	Outline = true,
+	-- 	Size = 19,
+	-- 	Visible = self.Enabled and self.Names
+	-- })
+	box.Components["Distance"] = ESP:CreateProperty('name',box)  
+	-- Draw("Text", {
+	-- 	Color = type(box.Color) == 'function' and box.Color() or box.Color,
+	-- 	Center = true,
+	-- 	Outline = true,
+	-- 	Size = 19,
+	-- 	Visible = self.Enabled and self.Names
+	-- })
 	
 	if not options.NoTracer then 
-		box.Components["Tracer"] = Draw("Line", {
-			Thickness = ESP.Thickness,
-			Color = type(box.Color) == 'function' and box.Color() or box.Color, --
-			Transparency = 1,
-			Visible = self.Enabled and self.Tracers
-		})
+		box.Components["Tracer"] = ESP:CreateProperty('tracer', box)
+		-- Draw("Line", {
+		-- 	Thickness = ESP.Thickness,
+		-- 	Color = type(box.Color) == 'function' and box.Color() or box.Color, --
+		-- 	Transparency = 1,
+		-- 	Visible = self.Enabled and self.Tracers
+		-- })
 	end
 	self.Objects[obj] = box
 	if options.flag == 'npcesp' then 
@@ -756,22 +843,24 @@ for i,v in pairs(plrs:GetPlayers()) do
 end
 
 
-
-ESP.CON = game:GetService("RunService").RenderStepped:Connect(function()
-	cam = workspace.CurrentCamera
-	if ESP.Enabled == true then 
-		for i,v in next, ESP.Objects do 
-			if v.Update then
-				v.Update(v)
-			end	
-		end	
-	end	
-	-- for i,v in (ESP.Enabled and pairs or ipairs)(ESP.Objects) do
-	-- 	if v.Update then
-    --         v.Update(v)
-	-- 		--local s,e = pcall(v.Update, v)
-	-- 		--if not s then warn("[EU]", e, v.Object:GetFullName()) end
-	-- 	end
-	-- end
-end)
+declareCtn()
+-- ESP.CON = game:GetService("RunService").RenderStepped:Connect(function()
+-- 	cam = workspace.CurrentCamera
+-- 	if ESP.Enabled == true then 
+-- 		for i,v in next, ESP.Objects do 
+-- 			if v.Update then
+-- 				v.Update(v)
+-- 			end	
+-- 		end	
+-- 	else
+-- 		ESP.CON:Disconnect()
+-- 	end	
+-- 	-- for i,v in (ESP.Enabled and pairs or ipairs)(ESP.Objects) do
+-- 	-- 	if v.Update then
+--     --         v.Update(v)
+-- 	-- 		--local s,e = pcall(v.Update, v)
+-- 	-- 		--if not s then warn("[EU]", e, v.Object:GetFullName()) end
+-- 	-- 	end
+-- 	-- end
+-- end)
 return ESP
