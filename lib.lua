@@ -560,10 +560,10 @@ function boxBase:Update()
 	if ESP.Names then
 		local TagPos, Vis5 = WorldToViewportPoint(cam, locs.TagPos.p)
 		if not self.Components['Name'] then  -- Compensation
-			box.Components["Name"] = ESP:CreateProperty('name', self) 
+			self.Components["Name"] = ESP:CreateProperty('name', self) 
 		end
 		if not self.Components['Distance'] then  -- Compensation
-			box.Components["Distance"] = ESP:CreateProperty('name',self)  
+			self.Components["Distance"] = ESP:CreateProperty('name',self)  
 		end
 		if Vis5 then
 			self.Components.Name.Visible = true
