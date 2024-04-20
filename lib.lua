@@ -1,6 +1,8 @@
 --Settings--
-if getgenv().ESP then 
-	getgenv().ESP.CON:Disconnect()
+if getgenv().ESP and getgenv().ESP.CON then 
+	pcall(function()
+		getgenv().ESP.CON:Disconnect()
+	end)
 end
 getgenv().ESP = getgenv().ESP or {
 	Enabled = false,
@@ -32,7 +34,7 @@ for i,v in next, getgenv().ESP.Objects  do
 end
 
 local function declareCtn()
-	ESP.CON = game:GetService("RunService").RenderStepped:Connect(function()
+	getgenv().ESP.CON = game:GetService("RunService").RenderStepped:Connect(function()
 		cam = workspace.CurrentCamera
 		if ESP.Enabled == true then 
 			for i,v in next, ESP.Objects do 
