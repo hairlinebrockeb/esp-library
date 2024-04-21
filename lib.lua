@@ -618,8 +618,12 @@ function boxBase:Update()
 			end
 		end
 	else
-		self.Components.Name.Visible = false
-		self.Components.Distance.Visible = false
+		if self.Components.Name then 
+			self.Components.Name.Visible = false
+		end
+		if self.Components.Distance then 
+			self.Components.Distance.Visible = false
+		end
 		if self.Components['Name'] then  -- Compensation
 			self.Components["Name"]:Remove()
 			self.Components["Name"] = nil
