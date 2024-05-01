@@ -668,7 +668,7 @@ function ESP:CreateProperty(property, box) -- Name @ box   usage
 			Color = type(box.Color) == 'function' and box.Color() or box.Color, -- box.Color -- table support (r,g,b)
 			Center = true,
 			Outline = true,
-			--Size = 10,
+			Size = 10,
 			Visible = self.Enabled and self.Names
 		})
 	elseif property == 'box' then 
@@ -746,7 +746,7 @@ function ESP:Add(obj, options)
 
 	if typeof(obj) ~= 'Vector3' and self:GetBox(obj) then
 		self:GetBox(obj):Remove()
-	elseif typeof(obj) == 'Vector3' a  67908nd self:GetBox(obj) then 
+	elseif typeof(obj) == 'Vector3' and self:GetBox(obj) then 
 
 	end
 
