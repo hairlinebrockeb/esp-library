@@ -2,6 +2,7 @@
 if getgenv().ESP and getgenv().ESP.CON then 
 	pcall(function()
 		getgenv().ESP.CON:Disconnect()
+		cleardrawcache()
 	end)
 end
 getgenv().ESP = getgenv().ESP or {
@@ -668,7 +669,7 @@ function ESP:CreateProperty(property, box) -- Name @ box   usage
 			Color = type(box.Color) == 'function' and box.Color() or box.Color, -- box.Color -- table support (r,g,b)
 			Center = true,
 			Outline = true,
-			Size = 10,
+			--Size = 10,
 			Visible = self.Enabled and self.Names
 		})
 	elseif property == 'box' then 
