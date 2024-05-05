@@ -556,6 +556,7 @@ function boxBase:Update()
 		end
 	else
 		if self.Components.Quad  then 
+			print('no nob',self.Object:GetFullName())
 			self.Components.Quad.Visible = false
 			self.Components["Quad"]:Remove()
 			self.Components["Quad"] = nil
