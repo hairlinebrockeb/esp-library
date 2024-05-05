@@ -14,7 +14,7 @@ getgenv().ESP = getgenv().ESP or {
 	FaceCamera = false,
 	Names = true,
 	TeamColor = true,
-	Thickness = 2,
+	Thickness = 1; --2,
 	AttachShift = 1,
 	TeamMates = true,
 	Players = true,
@@ -669,7 +669,8 @@ function ESP:CreateProperty(property, box) -- Name @ box   usage
 			Color = type(box.Color) == 'function' and box.Color() or box.Color, -- box.Color -- table support (r,g,b)
 			Center = true,
 			Outline = true,
-			--Size = 10,
+			Size = 10,
+			Font = 2,
 			Visible = self.Enabled and self.Names
 		})
 	elseif property == 'box' then 
