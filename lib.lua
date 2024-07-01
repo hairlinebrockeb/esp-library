@@ -442,7 +442,7 @@ function boxBase:Update()
 	end
 	if self.removeondisable and notactive == true then 
 		--self:Remove()
-		print('disabled so remove;')
+		--print('disabled so remove;')
 		--return
 		return self:Remove()
 	end
