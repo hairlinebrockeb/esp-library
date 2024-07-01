@@ -670,8 +670,8 @@ function ESP:CreateProperty(property, box) -- Name @ box   usage
 			Color = type(box.Color) == 'function' and box.Color() or box.Color, -- box.Color -- table support (r,g,b)
 			Center = true,
 			Outline = true,
-			Size = 10,
-			Font = 5, -- 2
+			Size = 15, -- 10
+			Font = 2 -- 5, -- 2
 			Visible = self.Enabled and self.Names
 		})
 	elseif property == 'box' then 
