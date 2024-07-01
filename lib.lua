@@ -671,7 +671,7 @@ function ESP:CreateProperty(property, box) -- Name @ box   usage
 			Center = true,
 			Outline = true,
 			Size = 15, -- 10
-			Font = 2 -- 5, -- 2
+			Font = 2, -- 5, -- 2
 			Visible = self.Enabled and self.Names
 		})
 	elseif property == 'box' then 
